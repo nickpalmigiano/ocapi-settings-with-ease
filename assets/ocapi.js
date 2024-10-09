@@ -51,7 +51,7 @@ class OCAPISettings {
         this.toggleErrorInForm(this.$cache.apiForm.api, false)
         this.$cache.spinnerApiForm.hide()
         this.$cache.apiContent.hide()
-        this.$cache.apiForm.host.val(localStorage.getItem(this.LOCAL_STORAGE_HOST_KEY) || 'demo-ocapi.demandware.net')
+        this.$cache.apiForm.host.val(localStorage.getItem(this.LOCAL_STORAGE_HOST_KEY) || 'dev-na01.cricut.com')
     }
 
     initializeEvents() {
@@ -70,10 +70,10 @@ class OCAPISettings {
             }
 
             // Register GA event, don't send specific instance details, only the API details for metrics purpose
-            this.registerEvent('search', {
-                api,
-                apiVersion
-            })
+            // this.registerEvent('search', {
+            //     api,
+            //     apiVersion
+            // })
 
             this.$cache.apiForm.button.attr('disabled', true)
             this.$cache.spinnerApiForm.show()
@@ -121,7 +121,7 @@ class OCAPISettings {
 
         this.$cache.copyToClipboardBtn.on('click', e => {
             // Register GA event
-            this.registerEvent('copy', {})
+            //this.registerEvent('copy', {})
             navigator.clipboard.writeText(this.$cache.ocapiSettingsTextarea.val())
         })
 
@@ -145,16 +145,16 @@ class OCAPISettings {
                 // Toggle off all paths and methods
                 this.$cache.apiTree.find('.slds-checkbox input[type="checkbox"]').prop('checked', false)
                 // Register GA event
-                this.registerEvent('alltoggle', {
-                    enabled: false
-                })
+                // this.registerEvent('alltoggle', {
+                //     enabled: false
+                // })
             } else {
                 // Toggle on all paths and methods
                 this.$cache.apiTree.find('[role="treeitem"]:visible .slds-checkbox input[type="checkbox"]').prop('checked', true)
                 // Register GA event
-                this.registerEvent('alltoggle', {
-                    enabled: true
-                })
+                // this.registerEvent('alltoggle', {
+                //     enabled: true
+                // })
             }
 
             this.handleCheckboxChange(this.$cache.apiTree)
@@ -175,9 +175,9 @@ class OCAPISettings {
                 this.ocapiSettings.clients = []
                 this.fillOcapiSettingsTextArea()
                 // Register GA event
-                this.registerEvent('wildcardtoggle', {
-                    enabled: false
-                })
+                // this.registerEvent('wildcardtoggle', {
+                //     enabled: false
+                // })
             } else {
                 // Toggle on all paths and methods
                 let clientObj = this.client();
@@ -185,9 +185,9 @@ class OCAPISettings {
                 this.upsertOcapiSettings(clientObj)
                 this.fillOcapiSettingsTextArea()
                 // Register GA event
-                this.registerEvent('wildcardtoggle', {
-                    enabled: true
-                })
+                // this.registerEvent('wildcardtoggle', {
+                //     enabled: true
+                // })
             }
 
             $target.toggleClass('slds-is-pressed')
@@ -223,9 +223,9 @@ class OCAPISettings {
         var treeSelector = '#' + $this.attr('aria-controls');
 
         // Register GA event
-        this.registerEvent('filter', {
-            value
-        })
+        // this.registerEvent('filter', {
+        //     value
+        // })
 
         this.removeMarkupFromTree(treeSelector);
         if (value.length > 1) {
@@ -470,11 +470,11 @@ class OCAPISettings {
     }
 
     registerEvent(eventName, eventData) {
-        if (typeof gtag === 'undefined') {
-            return;
-        }
+        // if (typeof gtag === 'undefined') {
+        //     return;
+        // }
 
-        gtag(eventName, eventData);
+        //gtag(eventName, eventData);
     }
 }
 

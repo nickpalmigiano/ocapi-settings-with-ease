@@ -2,11 +2,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
 const request = require('request-promise-native')
+const axios = require('axios')
 
 const app = express()
 const port = process.env.PORT || 3000
-const authURL = 'https://account.demandware.com/dw/oauth2/access_token'
-const baseURL = (host) => `https://${host}/s/-/dw/meta/v1/rest`
+const authURL = 'https://account.demandware.com/dwsso/oauth2/access_token'
+const baseURL = (host) => `https://${host}/s/-/dw/meta/rest`
 const defaultClientID = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 const defaultClientSecret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 var authToken = undefined
@@ -16,8 +17,7 @@ const defaultRequestOptions = url => {
         method: 'GET',
         headers: {
             'Authorization': authToken
-        },
-        json: true
+        }
     }
 }
 
@@ -27,7 +27,7 @@ app.use('/assets', express.static('assets'))
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => res.render('index', {
-    googleAnalyticsTagID: process.env.GA_TAG_ID
+    // googleAnalyticsTagID: process.env.GA_TAG_ID
 }))
 
 app.get('/manifest.json', (req, res) => res.sendFile(path.join(__dirname, '/src/manifest.json')))
@@ -40,7 +40,9 @@ app.post('/apis', (req, res) => {
         req.body.client_secret,
         req.body.api,
         req.body.apiVersion
-    ).then(paths => res.send(JSON.stringify(paths))).catch(e => {
+    ).then(paths => {
+        res.send(JSON.stringify(paths))
+    }).catch(e => {
         res.send(JSON.stringify({
             success: false,
             error: JSON.stringify(e)
@@ -48,7 +50,7 @@ app.post('/apis', (req, res) => {
     })
 })
 
-app.listen(port, () => console.log(`App started & now listening`))
+app.listen(port, () => console.log(`App started & now listening on ${port}`))
 
 function fetchEndpoints(host, clientId, clientSecret, apiName, apiVersion) {
     const client_id = clientId || defaultClientID
@@ -61,20 +63,20 @@ function fetchEndpoints(host, clientId, clientSecret, apiName, apiVersion) {
         promise = promise.then(apiURL => getVersion(apiURL, apiVersion))
         promise = promise.then(apiURL => getPaths(apiURL))
         promise = promise.then(response => {
-            if (!response.paths) {
+            if (!response.data.paths) {
                 reject(`Failed to find paths in the ${apiName} API. Please ensure you allowed at least one endpoint for the ${client_id} client ID on the ${host} instance.`)
                 return
             }
 
             transformedPaths = {}
-            Object.keys(response.paths).forEach(pathKey => {
+            Object.keys(response.data.paths).forEach(pathKey => {
                 newPathKey = pathKey.replace(/{\w+}/gi, '*')
-                transformedPaths[newPathKey] = response.paths[pathKey]
+                transformedPaths[newPathKey] = response.data.paths[pathKey]
             })
 
-            response.success = true
-            response.paths = transformedPaths
-            resolve(response)
+            response.data.success = true
+            response.data.paths = transformedPaths
+            resolve(response.data)
         })
 
         promise = promise.catch(err => {
@@ -93,11 +95,12 @@ function authenticate(clientID, clientSecret) {
                 'Content-type': 'application/x-www-form-urlencoded',
                 Authorization: `Basic ${Buffer.from(clientID + ':' + clientSecret).toString('base64')}`
             },
-            body: 'grant_type=client_credentials',
-            json: true
+            params: {
+                grant_type:'client_credentials'
+            }
         }).then(response => {
-            if (response.access_token) {
-                authToken = `${response.token_type} ${response.access_token}`
+            if (response.data.access_token) {
+                authToken = `${response.data.token_type} ${response.data.access_token}`
                 resolve(authToken)
                 return
             }
@@ -110,7 +113,7 @@ function authenticate(clientID, clientSecret) {
 function getAPI(host, apiName) {
     return new Promise((resolve, reject) => {
         performRequest(defaultRequestOptions(baseURL(host))).then(response => {
-            const api = response.apis.find(api => api.name === apiName)
+            const api = response.data.apis.find(api => api.name === apiName)
 
             if (api) {
                 resolve(api.link)
@@ -126,8 +129,8 @@ function getVersion(apiURL, apiVersion) {
     return new Promise((resolve, reject) => {
         performRequest(defaultRequestOptions(apiURL)).then(response => {
             const version = apiVersion
-                ? response.versions.find(version => version.name === apiVersion || version.status === apiVersion)
-                : response.versions.find(version => version.status === 'current')
+                ? response.data.versions.find(version => version.name === apiVersion || version.status === apiVersion)
+                : response.data.versions.find(version => version.status === 'current')
 
             if (version) {
                 resolve(version.link)
@@ -144,5 +147,5 @@ function getPaths(apiURL) {
 }
 
 function performRequest(options) {
-    return request(options)
+    return axios(options)
 }

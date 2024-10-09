@@ -39,13 +39,12 @@
 
     <% if (typeof googleAnalyticsTagID !== 'undefined') { %>
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=<%= googleAnalyticsTagID %>"></script>
+        <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=<%= googleAnalyticsTagID %>"></script> -->
         <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', '<%= googleAnalyticsTagID %>');
+            // window.dataLayer = window.dataLayer || [];
+            // function gtag(){dataLayer.push(arguments);}
+            // gtag('js', new Date());
+            // gtag('config', '<%= googleAnalyticsTagID %>');
         </script>
     <% } %>
 </head>
@@ -89,19 +88,19 @@
                         <div class="slds-form-element slds-form-element_horizontal">
                             <label class="slds-form-element__label" for="host">Instance Hostname</label>
                             <div class="slds-form-element__control">
-                                <input type="text" id="host" placeholder="demo-ocapi.demandware.net" class="slds-input" />
+                                <input type="text" id="host" placeholder="zzeu-008.dx.commercecloud.salesforce.com" class="slds-input" />
                             </div>
                         </div>
                         <div class="slds-form-element slds-form-element_horizontal">
                             <label class="slds-form-element__label" for="host">Client ID</label>
                             <div class="slds-form-element__control">
-                                <input type="text" id="client_id" placeholder="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" class="slds-input" />
+                                <input type="text" id="client_id" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" class="slds-input" />
                             </div>
                         </div>
                         <div class="slds-form-element slds-form-element_horizontal">
                             <label class="slds-form-element__label" for="host">Client secret</label>
                             <div class="slds-form-element__control">
-                                <input type="text" id="client_secret" placeholder="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" class="slds-input" />
+                                <input type="text" id="client_secret" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" class="slds-input" />
                             </div>
                         </div>
                         <fieldset class="slds-form-element slds-form-element_horizontal">
